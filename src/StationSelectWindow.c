@@ -6,6 +6,7 @@ static Layer *secondary_bg;
 static MenuLayer *menu_layer;
 
 static GRect secondary_bg_rect;
+static GRect secondary_bg_rect2;
 static GRect textrect;
 static GRect menulayerrect;
 
@@ -31,27 +32,43 @@ static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index,
 }
 
 static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
-    GRect bounds = layer_get_bounds(cell_layer);
+    GBitmap *buffer = graphics_capture_frame_buffer_format(ctx, GBitmapFormat8Bit);
+    GRect bounds = layer_get_frame(cell_layer);
+
+    GPoint offset = scroll_layer_get_content_offset(menu_layer_get_scroll_layer(menu_layer));
+
+    GRect frame = GRect(bounds.origin.x + offset.x, bounds.origin.y + offset.y, bounds.size.w, bounds.size.h);
     if(menu_layer_get_selected_index(menu_layer).row == cell_index->row) {
-        graphics_context_set_fill_color(ctx, GColorWhite);
-        if(cell_index->row == 0) {
-            graphics_fill_rect(ctx, GRect(5, bounds.size.h / 2, 9, bounds.size.h / 2), 0, GCornerNone);
-        } else if(cell_index->row == lines[station_select_line].stations - 1) {
-            graphics_fill_rect(ctx, GRect(5, 0, 9, bounds.size.h / 2), 0, GCornerNone);
-        } else {
-            graphics_fill_rect(ctx, GRect(5, 0, 9, bounds.size.h), 0, GCornerNone);
-        }
-        graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 7);
+        secondary_bg_rect2 = frame;
     }
-    graphics_context_set_fill_color(ctx, lines[station_select_line].color);
+
+    GColor line_color = lines[station_select_line].color;
     if(cell_index->row == 0) {
-        graphics_fill_rect(ctx, GRect(6, bounds.size.h / 2, 7, bounds.size.h / 2), 0, GCornerNone);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 5, frame.origin.y + frame.size.h / 2, 9, frame.size.h / 2),
+                                GColorWhite);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 6, frame.origin.y + frame.size.h / 2, 7, frame.size.h / 2),
+                                line_color);
     } else if(cell_index->row == lines[station_select_line].stations - 1) {
-        graphics_fill_rect(ctx, GRect(6, 0, 7, bounds.size.h / 2), 0, GCornerNone);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h / 2),
+                                GColorWhite);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h / 2),
+                                line_color);
     } else {
-        graphics_fill_rect(ctx, GRect(6, 0, 7, bounds.size.h), 0, GCornerNone);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h),
+                                GColorWhite);
+        draw_filled_rect_buffer(buffer,
+                                GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h),
+                                line_color);
     }
-    graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 6);
+    draw_filled_circle_buffer(buffer, GPoint(frame.origin.x + 9, frame.origin.y + frame.size.h / 2), 7, GColorWhite);
+    draw_filled_circle_buffer(buffer, GPoint(frame.origin.x + 9, frame.origin.y + frame.size.h / 2), 6, line_color);
+    graphics_release_frame_buffer(ctx, buffer);
+
     if(menu_layer_get_selected_index(menu_layer).row == cell_index->row) {
         graphics_context_set_fill_color(ctx, GColorWhite);
         graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 3);
@@ -105,7 +122,7 @@ static void update_select_animation(Animation *anim, const AnimationProgress pro
 
 static void update_select_reverse_animation(Animation *anim, const AnimationProgress progress) {
     //textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
-    secondary_bg_rect = GRect(0, 0, 144, 44 + 124 * progress / ANIMATION_NORMALIZED_MAX);
+    secondary_bg_rect = GRect(0, secondary_bg_rect2.origin.y - secondary_bg_rect2.origin.y * progress / ANIMATION_NORMALIZED_MAX, 144, 44 + 124 * progress / ANIMATION_NORMALIZED_MAX);
     layer_set_frame(secondary_bg, secondary_bg_rect);
 }
 

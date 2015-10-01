@@ -1,0 +1,9 @@
+#pragma once
+
+#include <pebble.h>
+
+void draw_filled_circle_buffer(GBitmap *buffer, GPoint center, int radius, GColor color);
+
+void draw_line_buffer(GBitmap *buffer, GPoint p1, GPoint p2, GColor color);
+
+void draw_filled_rect_buffer(GBitmap *buffer, GRect rect, GColor color);
