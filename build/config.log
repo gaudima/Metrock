@@ -1,0 +1,21 @@
+# project  configured on Thu Oct  1 07:21:46 2015 by
+# waf 1.7.11 (abi 98, python 20709f0 on linux2)
+# using /home/lolka/pebble-dev/PebbleSDK-3.4/Pebble/waf configure
+#
+----------------------------------------
+Setting top to
+/home/lolka/metro-spb
+----------------------------------------
+Setting out to
+/home/lolka/metro-spb/build
+----------------------------------------
+Found Pebble SDK for basalt in:
+/home/lolka/pebble-dev/PebbleSDK-3.4/Pebble/basalt
+----------------------------------------
+Checking for program gcc,cc
+arm-none-eabi-gcc
+find program=['gcc', 'cc'] paths='' var='CC' -> 'arm-none-eabi-gcc'
+----------------------------------------
+Checking for program ar
+arm-none-eabi-ar
+find program=['ar'] paths='' var='AR' -> 'arm-none-eabi-ar'

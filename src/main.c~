@@ -1,0 +1,21 @@
+#include <pebble.h>
+#include "PathFinder.h"
+#include "Autogen.h"
+
+static Window *window;
+static Layer *window_layer;
+static Layer *scheme_layer;
+
+void init() {
+  init_autogen();
+}
+
+void deinit() {
+  deinit_autogen();
+}
+
+int main(void) {
+  init();
+  app_event_loop();
+  deinit();
+}
