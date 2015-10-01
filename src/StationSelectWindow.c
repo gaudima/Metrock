@@ -15,6 +15,15 @@ static GPoint right_arrow;
 static Animation *animation;
 static char *line_text;
 
+static int strlen_utf8(char *s) {
+    int i = 0, j = 0;
+    while (s[i]) {
+        if ((s[i] & 0xc0) != 0x80) j++;
+        i++;
+    }
+    return j;
+}
+
 static void menu_push_back(ClickRecognizerRef recognizer, void *context);
 
 static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
@@ -23,14 +32,46 @@ static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index,
 
 static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
     GRect bounds = layer_get_bounds(cell_layer);
-    graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+    if(menu_layer_get_selected_index(menu_layer).row == cell_index->row) {
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        if(cell_index->row == 0) {
+            graphics_fill_rect(ctx, GRect(5, bounds.size.h / 2, 9, bounds.size.h / 2), 0, GCornerNone);
+        } else if(cell_index->row == lines[station_select_line].stations - 1) {
+            graphics_fill_rect(ctx, GRect(5, 0, 9, bounds.size.h / 2), 0, GCornerNone);
+        } else {
+            graphics_fill_rect(ctx, GRect(5, 0, 9, bounds.size.h), 0, GCornerNone);
+        }
+        graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 7);
+    }
+    graphics_context_set_fill_color(ctx, lines[station_select_line].color);
+    if(cell_index->row == 0) {
+        graphics_fill_rect(ctx, GRect(6, bounds.size.h / 2, 7, bounds.size.h / 2), 0, GCornerNone);
+    } else if(cell_index->row == lines[station_select_line].stations - 1) {
+        graphics_fill_rect(ctx, GRect(6, 0, 7, bounds.size.h / 2), 0, GCornerNone);
+    } else {
+        graphics_fill_rect(ctx, GRect(6, 0, 7, bounds.size.h), 0, GCornerNone);
+    }
+    graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 6);
+    if(menu_layer_get_selected_index(menu_layer).row == cell_index->row) {
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_fill_circle(ctx, GPoint(9, bounds.size.h / 2), 3);
+    }
+    GRect strect;
+    if(strlen_utf8(stations[graph_index[lines[station_select_line].startfrom + cell_index->row]].name) <= 15) {
+        strect = GRect(20, bounds.size.h / 2 - 13, bounds.size.w - 23, bounds.size.h / 2);
+    } else {
+        strect = GRect(20, 0, bounds.size.w - 23, bounds.size.h);
+    }
     graphics_draw_text(ctx,
                        stations[graph_index[lines[station_select_line].startfrom + cell_index->row]].name,
                        fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD),
-                       bounds,
-                       GTextOverflowModeWordWrap,
+                       strect,
+                       GTextOverflowModeTrailingEllipsis,
                        GTextAlignmentLeft,
                        NULL);
+    //graphics_context_set_stroke_color(ctx, lines[station_select_line].color);
+    //graphics_context_set_stroke_width(ctx, 1);
+    //graphics_draw_line(ctx, GPoint(0, 43), GPoint(bounds.size.w, 43));
     //menu_cell_basic_draw(ctx, cell_layer, stations[graph_index[lines[station_select_line].startfrom + cell_index->row]].name, NULL, NULL);
 }
 
@@ -149,10 +190,12 @@ static void click_config_provider(void *context) {
 }
 
 static void menu_push_back(ClickRecognizerRef recognizer, void *context) {
+    //menu_layer_set_selected_index(menu_layer, menu_layer_get_selected_index(menu_layer), MenuRowAlignTop, true);
     window_set_click_config_provider(window, click_config_provider);
     animation = animation_create();
     animation_set_implementation(animation, &select_reverse_implementation);
     animation_set_handlers(animation, (AnimationHandlers) {.started = hide_menu}, NULL);
+    //animation_set_delay(animation, 300);
     animation_schedule(animation);
 }
 
@@ -213,6 +256,7 @@ static void load(Window *win) {
             .get_num_rows = menu_get_num_rows,
             .draw_row = menu_draw_row
     });
+    menu_layer_pad_bottom_enable(menu_layer, false);
     layer_set_hidden(menu_layer_get_layer(menu_layer), true);
     layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
     window_set_click_config_provider(window, click_config_provider);
