@@ -15,6 +15,8 @@ static GPoint right_arrow;
 static Animation *animation;
 static char *line_text;
 
+static void menu_push_back(ClickRecognizerRef recognizer, void *context);
+
 static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
     return lines[station_select_line].stations;
 }
@@ -55,14 +57,24 @@ static void update_right_animation(Animation *anim, const AnimationProgress prog
 }
 
 static void update_select_animation(Animation *anim, const AnimationProgress progress) {
-    textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
-    secondary_bg_rect = GRect(0, 0, 144, 168 - 124 * 2 * progress / ANIMATION_NORMALIZED_MAX);
+    //textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
+    secondary_bg_rect = GRect(0, 0, 144, 168 - 124 * progress / ANIMATION_NORMALIZED_MAX);
+    layer_set_frame(secondary_bg, secondary_bg_rect);
+}
+
+static void update_select_reverse_animation(Animation *anim, const AnimationProgress progress) {
+    //textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
+    secondary_bg_rect = GRect(0, 0, 144, 44 + 124 * progress / ANIMATION_NORMALIZED_MAX);
     layer_set_frame(secondary_bg, secondary_bg_rect);
 }
 
 static void show_menu(Animation *anim, bool finished, void *context) {
-    menulayerrect = GRect(0, 0, 144, 168);
-    layer_set_frame(menu_layer_get_layer(menu_layer), menulayerrect);
+    layer_set_hidden(menu_layer_get_layer(menu_layer), false);
+}
+
+static void hide_menu(Animation *anim, void *context) {
+    layer_set_hidden(menu_layer_get_layer(menu_layer), true);
+    line_select = true;
 }
 
 static AnimationImplementation left_implementation = {
@@ -77,10 +89,28 @@ static AnimationImplementation select_implementation = {
         .update = update_select_animation
 };
 
+static AnimationImplementation select_reverse_implementation = {
+        .update = update_select_reverse_animation
+};
+
 static void close_station_select_window(ClickRecognizerRef recognizer, void *context) {
     window_stack_remove(window, true);
     main_window_revert_back();
     window_destroy(window);
+}
+
+ClickConfigProvider prev_ccp;
+
+static void menu_click_config_provider(void *context) {
+    prev_ccp(context);
+    window_single_click_subscribe(BUTTON_ID_BACK, menu_push_back);
+}
+
+
+static void set_menu_click_config_provider() {
+    menu_layer_set_click_config_onto_window(menu_layer, window);
+    prev_ccp = window_get_click_config_provider(window);
+    window_set_click_config_provider_with_context(window, menu_click_config_provider, menu_layer);
 }
 
 static void push_up(ClickRecognizerRef recognizer, void *context) {
@@ -93,8 +123,9 @@ static void push_up(ClickRecognizerRef recognizer, void *context) {
 
 static void push_select(ClickRecognizerRef recognizer, void *context) {
     menu_layer_set_highlight_colors(menu_layer, lines[station_select_line].color, GColorWhite);
+    menu_layer_set_selected_index(menu_layer, (MenuIndex) {.section = 0, .row = 0}, MenuRowAlignTop, false);
     menu_layer_reload_data(menu_layer);
-    menu_layer_set_click_config_onto_window(menu_layer, window);
+    set_menu_click_config_provider();
     line_select = false;
     animation = animation_create();
     animation_set_implementation(animation, &select_implementation);
@@ -115,6 +146,14 @@ static void click_config_provider(void *context) {
     window_single_click_subscribe(BUTTON_ID_SELECT, push_select);
     window_single_repeating_click_subscribe(BUTTON_ID_DOWN, 300, push_down);
     window_single_click_subscribe(BUTTON_ID_BACK, close_station_select_window);
+}
+
+static void menu_push_back(ClickRecognizerRef recognizer, void *context) {
+    window_set_click_config_provider(window, click_config_provider);
+    animation = animation_create();
+    animation_set_implementation(animation, &select_reverse_implementation);
+    animation_set_handlers(animation, (AnimationHandlers) {.started = hide_menu}, NULL);
+    animation_schedule(animation);
 }
 
 static void update_proc(Layer * this, GContext *ctx) {
@@ -162,7 +201,7 @@ static void load(Window *win) {
     left_arrow = GPoint(4, 86);
     right_arrow = GPoint(140, 86);
     textrect = GRect(10, 90, 124, 56);
-    menulayerrect = GRect(144, 0, 144, 168);
+    menulayerrect = GRect(0, 0, 144, 168);
     window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
     secondary_bg_rect = frame;
@@ -174,12 +213,14 @@ static void load(Window *win) {
             .get_num_rows = menu_get_num_rows,
             .draw_row = menu_draw_row
     });
+    layer_set_hidden(menu_layer_get_layer(menu_layer), true);
     layer_add_child(window_layer, menu_layer_get_layer(menu_layer));
     window_set_click_config_provider(window, click_config_provider);
 }
 
 static void unload(Window *win) {
     layer_destroy(secondary_bg);
+    menu_layer_destroy(menu_layer);
     free(line_text);
 }
 
