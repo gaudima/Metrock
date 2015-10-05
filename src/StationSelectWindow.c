@@ -26,6 +26,7 @@ static int strlen_utf8(char *s) {
 }
 
 static void menu_push_back(ClickRecognizerRef recognizer, void *context);
+static void (*selectStation)(int);
 
 static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
     return lines[station_select_line].stations;
@@ -135,6 +136,15 @@ static void hide_menu(Animation *anim, void *context) {
     line_select = true;
 }
 
+static void hide_menu2(Animation *anim, void *context) {
+    layer_set_hidden(menu_layer_get_layer(menu_layer), true);
+}
+
+static void close_window(Animation *anim, bool finished, void *context) {
+    selectStation(lines[station_select_line].startfrom + ((MenuIndex*)context)->row);
+    window_stack_remove(window, false);
+}
+
 static AnimationImplementation left_implementation = {
         .update = update_left_animation
 };
@@ -150,6 +160,13 @@ static AnimationImplementation select_implementation = {
 static AnimationImplementation select_reverse_implementation = {
         .update = update_select_reverse_animation
 };
+
+static void menu_click_select(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+    animation = animation_create();
+    animation_set_implementation(animation, &select_reverse_implementation);
+    animation_set_handlers(animation, (AnimationHandlers) {.started = hide_menu2, .stopped = close_window}, cell_index);
+    animation_schedule(animation);
+}
 
 static void close_station_select_window(ClickRecognizerRef recognizer, void *context) {
     window_stack_remove(window, true);
@@ -271,7 +288,8 @@ static void load(Window *win) {
     menu_layer = menu_layer_create(menulayerrect);
     menu_layer_set_callbacks(menu_layer, NULL, (MenuLayerCallbacks) {
             .get_num_rows = menu_get_num_rows,
-            .draw_row = menu_draw_row
+            .draw_row = menu_draw_row,
+            .select_click = menu_click_select
     });
     menu_layer_pad_bottom_enable(menu_layer, false);
     layer_set_hidden(menu_layer_get_layer(menu_layer), true);
@@ -285,7 +303,8 @@ static void unload(Window *win) {
     free(line_text);
 }
 
-void open_station_select_window() {
+void open_station_select_window(void (*selectStationCallback)(int)) {
+    selectStation = selectStationCallback;
     window = window_create();
     window_set_window_handlers(window, (WindowHandlers) {
             .load = load,

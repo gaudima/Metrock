@@ -3,8 +3,8 @@
 static Window *window;
 static Layer *window_layer;
 static Layer *graphics_layer;
-static Animation *to_animation;
-static Animation *from_animation;
+static Animation *animation;
+//static Animation *from_animation;
 static bool to_animation_playing;
 static bool from_animation_playing;
 
@@ -12,6 +12,18 @@ static RectProps to_rect;
 static RectProps from_rect;
 static RectProps to_gray_rect;
 static RectProps from_gray_rect;
+
+static void select_from_callback(int index) {
+    path_from = index;
+    layer_mark_dirty(graphics_layer);
+    main_window_revert_back();
+}
+
+static void select_to_callback(int index) {
+    path_to = index;
+    layer_mark_dirty(graphics_layer);
+    main_window_revert_back();
+}
 
 static void update_from_animation(Animation *anim, const AnimationProgress progress) {
     from_rect.corner_mask = GCornerNone;
@@ -66,15 +78,13 @@ static AnimationImplementation fromback_implementation = {
 };
 
 void main_window_revert_back() {
+    animation = animation_create();
     if(to_animation_playing) {
-        to_animation = animation_create();
-        animation_set_implementation(to_animation, &toback_implementation);
-        animation_schedule(to_animation);
+        animation_set_implementation(animation, &toback_implementation);
     } else if(from_animation_playing) {
-        from_animation = animation_create();
-        animation_set_implementation(from_animation, &fromback_implementation);
-        animation_schedule(from_animation);
+        animation_set_implementation(animation, &fromback_implementation);
     }
+    animation_schedule(animation);
     to_animation_playing = false;
     from_animation_playing = false;
 }
@@ -91,27 +101,31 @@ static void reset_animations() {
     from_animation_playing = false;
 }
 
-static void opend_station_select_callback(Animation *anim, bool finished, void *context) {
-    open_station_select_window();
+static void open_station_select_from_callback(Animation *anim, bool finished, void *context) {
+    open_station_select_window(select_from_callback);
+}
+
+static void open_station_select_to_callback(Animation *anim, bool finished, void *context) {
+    open_station_select_window(select_to_callback);
 }
 
 static void select_to(ClickRecognizerRef recognizer, void *context) {
     reset_animations();
-    to_animation = animation_create();
-    animation_set_implementation(to_animation, &to_implementation);
-    animation_set_handlers(to_animation, (AnimationHandlers) {.stopped = opend_station_select_callback}, NULL);
+    animation = animation_create();
+    animation_set_implementation(animation, &to_implementation);
+    animation_set_handlers(animation, (AnimationHandlers) {.stopped = open_station_select_to_callback}, NULL);
     to_animation_playing = true;
-    animation_schedule(to_animation);
+    animation_schedule(animation);
     station_select_line = stations[graph_index[path_to]].line;
 }
 
 static void select_from(ClickRecognizerRef recognizer, void *context) {
     reset_animations();
-    from_animation = animation_create();
-    animation_set_implementation(from_animation, &from_implementation);
-    animation_set_handlers(from_animation, (AnimationHandlers) {.stopped = opend_station_select_callback}, NULL);
+    animation = animation_create();
+    animation_set_implementation(animation, &from_implementation);
+    animation_set_handlers(animation, (AnimationHandlers) {.stopped = open_station_select_from_callback}, NULL);
     from_animation_playing = true;
-    animation_schedule(from_animation);
+    animation_schedule(animation);
     station_select_line = stations[graph_index[path_from]].line;
 }
 
