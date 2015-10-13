@@ -26,7 +26,7 @@ static int strlen_utf8(char *s) {
 }
 
 static void menu_push_back(ClickRecognizerRef recognizer, void *context);
-static void (*selectStation)(int);
+static void (*selectStation)(int, GRect);
 
 static uint16_t menu_get_num_rows(MenuLayer *menu_layer, uint16_t section_index, void *callback_context) {
     return lines[station_select_line].stations;
@@ -87,10 +87,6 @@ static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cel
                        GTextOverflowModeTrailingEllipsis,
                        GTextAlignmentLeft,
                        NULL);
-    //graphics_context_set_stroke_color(ctx, lines[station_select_line].color);
-    //graphics_context_set_stroke_width(ctx, 1);
-    //graphics_draw_line(ctx, GPoint(0, 43), GPoint(bounds.size.w, 43));
-    //menu_cell_basic_draw(ctx, cell_layer, stations[graph_index[lines[station_select_line].startfrom + cell_index->row]].name, NULL, NULL);
 }
 
 static void update_left_animation(Animation *anim, const AnimationProgress progress) {
@@ -116,14 +112,12 @@ static void update_right_animation(Animation *anim, const AnimationProgress prog
 }
 
 static void update_select_animation(Animation *anim, const AnimationProgress progress) {
-    //textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
-    secondary_bg_rect = GRect(0, 0, 144, 168 - 124 * progress / ANIMATION_NORMALIZED_MAX);
+    secondary_bg_rect = interpolate_rect(GRect(0, 0, 144, 168), GRect(0, 0, 144, 44), progress);
     layer_set_frame(secondary_bg, secondary_bg_rect);
 }
 
 static void update_select_reverse_animation(Animation *anim, const AnimationProgress progress) {
-    //textrect = GRect(10, 90 - 85 * progress / ANIMATION_NORMALIZED_MAX, 124, 56);
-    secondary_bg_rect = GRect(0, secondary_bg_rect2.origin.y - secondary_bg_rect2.origin.y * progress / ANIMATION_NORMALIZED_MAX, 144, 44 + 124 * progress / ANIMATION_NORMALIZED_MAX);
+    secondary_bg_rect = interpolate_rect(secondary_bg_rect2, GRect(0, 0, 144, 168), progress);
     layer_set_frame(secondary_bg, secondary_bg_rect);
 }
 
@@ -136,13 +130,11 @@ static void hide_menu(Animation *anim, void *context) {
     line_select = true;
 }
 
-static void hide_menu2(Animation *anim, void *context) {
+static void close_station_select_window(ClickRecognizerRef recognizer, void *context) {
     layer_set_hidden(menu_layer_get_layer(menu_layer), true);
-}
-
-static void close_window(Animation *anim, bool finished, void *context) {
-    selectStation(lines[station_select_line].startfrom + ((MenuIndex*)context)->row);
-    window_stack_remove(window, false);
+    window_stack_remove(window, true);
+    main_window_revert_back();
+    window_destroy(window);
 }
 
 static AnimationImplementation left_implementation = {
@@ -162,15 +154,8 @@ static AnimationImplementation select_reverse_implementation = {
 };
 
 static void menu_click_select(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-    animation = animation_create();
-    animation_set_implementation(animation, &select_reverse_implementation);
-    animation_set_handlers(animation, (AnimationHandlers) {.started = hide_menu2, .stopped = close_window}, cell_index);
-    animation_schedule(animation);
-}
-
-static void close_station_select_window(ClickRecognizerRef recognizer, void *context) {
-    window_stack_remove(window, true);
-    main_window_revert_back();
+    window_stack_remove(window, false);
+    selectStation(lines[station_select_line].startfrom + cell_index->row, secondary_bg_rect2);
     window_destroy(window);
 }
 
@@ -224,12 +209,10 @@ static void click_config_provider(void *context) {
 }
 
 static void menu_push_back(ClickRecognizerRef recognizer, void *context) {
-    //menu_layer_set_selected_index(menu_layer, menu_layer_get_selected_index(menu_layer), MenuRowAlignTop, true);
     window_set_click_config_provider(window, click_config_provider);
     animation = animation_create();
     animation_set_implementation(animation, &select_reverse_implementation);
     animation_set_handlers(animation, (AnimationHandlers) {.started = hide_menu}, NULL);
-    //animation_set_delay(animation, 300);
     animation_schedule(animation);
 }
 
@@ -303,7 +286,7 @@ static void unload(Window *win) {
     free(line_text);
 }
 
-void open_station_select_window(void (*selectStationCallback)(int)) {
+void open_station_select_window(void (*selectStationCallback)(int, GRect)) {
     selectStation = selectStationCallback;
     window = window_create();
     window_set_window_handlers(window, (WindowHandlers) {

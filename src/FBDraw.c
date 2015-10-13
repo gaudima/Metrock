@@ -73,3 +73,9 @@ void draw_filled_rect_buffer(GBitmap *buffer, GRect rect, GColor color) {
         }
     }
 }
+
+void draw_separator(GBitmap *buffer, uint8_t y, GColor color) {
+    for(int x = 0; x < 144; x+=2) {
+        draw_pixel(buffer, GPoint(x, y), color);
+    }
+}

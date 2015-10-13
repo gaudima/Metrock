@@ -3,6 +3,9 @@
 #include "Autogen.h"
 #include "PathFinder.h"
 #include "StationSelectWindow.h"
+#include "Util.h"
+#include "FBDraw.h"
+#include "Dither.h"
 
 typedef struct RectProps {
     GRect rect;
