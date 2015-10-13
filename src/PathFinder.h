@@ -19,10 +19,6 @@ typedef struct path {
   int *nodes;
 } Path;
 
-int path_from;
-
-int path_to;
-
 Heap *heap_create();
 
 HeapNode *heap_get_min(Heap *what);
@@ -33,7 +29,7 @@ void heap_add_element(Heap *what, HeapNode node);
 
 void heap_destroy(Heap *what);
 
-void path_find_p(int from);
+int path_find(int from, int to);
 
 //Path *path_find(int from, int to);
 

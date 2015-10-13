@@ -66,7 +66,7 @@ void heap_destroy(Heap *what) {
   free(what);
 }
 
-void path_find_p(int from) {
+int path_find(int from, int to) {
   d = malloc(stationlen * sizeof(int));
   p = malloc(stationlen * sizeof(int));
   for(int i = 0; i < stationlen; i++) {
@@ -93,7 +93,9 @@ void path_find_p(int from) {
       }
     }
   }
+  int ret = d[to];
   heap_destroy(q);
   free(d);
   free(p);
+  return ret;
 }

@@ -11,8 +11,20 @@ static GRect to_rect;
 static GRect from_rect;
 static GRect to_rect_final;
 static GRect from_rect_final;
+
+static char time_str[5];
+static int time_int;
+
+static char minutes_str[13];
+static int path_from;
+
+static int path_to;
+
 static void select_from_callback(int index, GRect final) {
     path_from = index;
+    time_int = path_find(graph_index[path_from], graph_index[path_to]) / 60;
+    custom_itoa(time_int, time_str);
+    minutes_get_right(time_int, minutes_str);
     from_rect_final = final;
     layer_mark_dirty(graphics_layer);
     main_window_revert_back();
@@ -20,6 +32,9 @@ static void select_from_callback(int index, GRect final) {
 
 static void select_to_callback(int index, GRect final) {
     path_to = index;
+    time_int = path_find(graph_index[path_from], graph_index[path_to]) / 60;
+    custom_itoa(time_int, time_str);
+    minutes_get_right(time_int, minutes_str);
     to_rect_final = final;
     layer_mark_dirty(graphics_layer);
     main_window_revert_back();
@@ -140,10 +155,10 @@ static void update_proc(Layer *this, GContext *ctx) {
         graphics_release_frame_buffer(ctx, fb);
         graphics_context_set_text_color(ctx, GColorBlack);
 
-        graphics_draw_text(ctx, "55", fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
-                           GRect(4, 54, 144, 56), GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
-        graphics_draw_text(ctx, "минут", fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
-                           GRect(4, 76, 144, 56), GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+        graphics_draw_text(ctx, time_str, fonts_get_system_font(FONT_KEY_LECO_36_BOLD_NUMBERS),
+                           GRect(0, 52, 144, 56), GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
+        graphics_draw_text(ctx, minutes_str, fonts_get_system_font(FONT_KEY_GOTHIC_24),
+                           GRect(0, 82, 144, 56), GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
         graphics_draw_text(ctx, "Отсюда:", fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(4, 0, 132, 26),
                            GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
         graphics_draw_text(ctx, "Сюда:", fonts_get_system_font(FONT_KEY_GOTHIC_14), GRect(4, 112, 132, 26),
@@ -158,6 +173,9 @@ static void update_proc(Layer *this, GContext *ctx) {
 static void load(Window *win) {
     path_from = 0;
     path_to = 26;
+    time_int = path_find(graph_index[path_from], graph_index[path_to]) / 60;
+    custom_itoa(time_int, time_str);
+    minutes_get_right(time_int, minutes_str);
     reset_animations();
     window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);

@@ -16,15 +16,6 @@ static GPoint right_arrow;
 static Animation *animation;
 static char *line_text;
 
-static int strlen_utf8(char *s) {
-    int i = 0, j = 0;
-    while (s[i]) {
-        if ((s[i] & 0xc0) != 0x80) j++;
-        i++;
-    }
-    return j;
-}
-
 static void menu_push_back(ClickRecognizerRef recognizer, void *context);
 static void (*selectStation)(int, GRect);
 
