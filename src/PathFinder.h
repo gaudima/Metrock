@@ -2,6 +2,7 @@
 #include <pebble.h>
 #include <limits.h>
 #include "Autogen.h"
+#include "PathWindow.h"
 
 typedef struct heap_node {
   int num;
@@ -14,11 +15,6 @@ typedef struct heap {
   HeapNode *h;
 } Heap;
 
-typedef struct path {
-  int size;
-  int *nodes;
-} Path;
-
 Heap *heap_create();
 
 HeapNode *heap_get_min(Heap *what);
@@ -30,7 +26,3 @@ void heap_add_element(Heap *what, HeapNode node);
 void heap_destroy(Heap *what);
 
 int path_find(int from, int to);
-
-//Path *path_find(int from, int to);
-
-//void path_destroy(Path *p);

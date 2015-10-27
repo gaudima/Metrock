@@ -114,6 +114,24 @@ static void select_to(ClickRecognizerRef recognizer, void *context) {
     station_select_line = stations[graph_index[path_to]].line;
 }
 
+static void open_path_wnd(ClickRecognizerRef recognizer, void *context) {
+    open_pathview_window(time_str, minutes_str);
+}
+
+static void swap_sations_animate(ClickRecognizerRef recognizer, void *context) {
+
+}
+
+static void swap_stations(ClickRecognizerRef recognizer, void *context) {
+    int tmp = path_from;
+    path_from = path_to;
+    path_to = tmp;
+    time_int = path_find(graph_index[path_from], graph_index[path_to]) / 60;
+    custom_itoa(time_int, time_str);
+    minutes_get_right(time_int, minutes_str);
+    layer_mark_dirty(graphics_layer);
+}
+
 static void select_from(ClickRecognizerRef recognizer, void *context) {
     reset_animations();
     animation = animation_create();
@@ -130,6 +148,8 @@ static void close_main_window(ClickRecognizerRef recognixer, void *context) {
 }
 
 static void click_config_provider(void *context) {
+    window_long_click_subscribe(BUTTON_ID_SELECT, 300, NULL, swap_stations);
+    window_single_click_subscribe(BUTTON_ID_SELECT, open_path_wnd);
     window_single_click_subscribe(BUTTON_ID_UP, select_from);
     window_single_click_subscribe(BUTTON_ID_DOWN, select_to);
     window_single_click_subscribe(BUTTON_ID_BACK, close_main_window);
