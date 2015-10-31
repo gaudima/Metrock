@@ -2,7 +2,7 @@
 ## Description
 App that will help you to travel in Saint-Petersburg metro by finding fastest route.
 
-## Screeenshots
+## Screenshots
 <p align="center">
 <img src="https://cloud.githubusercontent.com/assets/958656/10863570/8e5d232a-7fe2-11e5-8572-d7f969cdf203.jpg" />
 
