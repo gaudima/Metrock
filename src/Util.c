@@ -18,6 +18,11 @@ int strlen_utf8(char *s) {
 
 void custom_itoa(int num, char *buf) {
     int tmp_num = num, length = 0;
+    if(num == 0) {
+        buf[0] = '0';
+        buf[1] = '\0';
+        return;
+    }
     while(tmp_num > 0) {
         tmp_num /= 10;
         length++;

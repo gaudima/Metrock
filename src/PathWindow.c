@@ -32,27 +32,29 @@ static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cel
 
     GRect frame = GRect(bounds.origin.x + offset.x, 56 + bounds.origin.y + offset.y, bounds.size.w, bounds.size.h);
     GColor line_color = lines[stations[path->nodes[path->size - cell_index->row - 1]].line].color;
-    if(cell_index->row == 0) {
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 5, frame.origin.y + frame.size.h / 2, 9, frame.size.h / 2),
-                                GColorWhite);
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 6, frame.origin.y + frame.size.h / 2, 7, frame.size.h / 2),
-                                line_color);
-    } else if(cell_index->row == path->size - 1) {
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h / 2),
-                                GColorWhite);
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h / 2),
-                                line_color);
-    } else {
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h),
-                                GColorWhite);
-        draw_filled_rect_buffer(buffer,
-                                GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h),
-                                line_color);
+    if(path->size != 1) {
+        if (cell_index->row == 0) {
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 5, frame.origin.y + frame.size.h / 2, 9, frame.size.h / 2),
+                                    GColorWhite);
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 6, frame.origin.y + frame.size.h / 2, 7, frame.size.h / 2),
+                                    line_color);
+        } else if (cell_index->row == path->size - 1) {
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h / 2),
+                                    GColorWhite);
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h / 2),
+                                    line_color);
+        } else {
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 5, frame.origin.y, 9, frame.size.h),
+                                    GColorWhite);
+            draw_filled_rect_buffer(buffer,
+                                    GRect(frame.origin.x + 6, frame.origin.y, 7, frame.size.h),
+                                    line_color);
+        }
     }
     draw_filled_circle_buffer(buffer, GPoint(frame.origin.x + 9, frame.origin.y + frame.size.h / 2), 7, GColorWhite);
     draw_filled_circle_buffer(buffer, GPoint(frame.origin.x + 9, frame.origin.y + frame.size.h / 2), 6, line_color);
