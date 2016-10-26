@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 2.6)
 # dependencies from some header files.
 project(metro-spb C)
 # Load our modules for this project
-include_directories(/home/lolka/pebble-dev/PebbleSDK-3.4/Pebble/basalt/include)
+include_directories(/home/lolka/.pebble-sdk/SDKs/3.14/sdk-core/pebble/basalt/include)
 file(GLOB SOURCE_FILES src/*.c)
 add_executable(metro-spb ${SOURCE_FILES})
 add_custom_target(pebble-build COMMAND)

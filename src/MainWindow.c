@@ -193,6 +193,7 @@ static void update_proc(Layer *this, GContext *ctx) {
 static void load(Window *win) {
     path_from = 0;
     path_to = 26;
+    path.nodes = NULL;
     time_int = path_find(graph_index[path_from], graph_index[path_to]) / 60;
     custom_itoa(time_int, time_str);
     minutes_get_right(time_int, minutes_str);

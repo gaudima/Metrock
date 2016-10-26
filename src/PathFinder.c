@@ -67,6 +67,7 @@ void heap_destroy(Heap *what) {
 }
 
 int path_find(int from, int to) {
+    free_path();
     d = malloc(stationlen * sizeof(int));
     p = malloc(stationlen * sizeof(int));
     for (int i = 0; i < stationlen; i++) {
@@ -94,14 +95,60 @@ int path_find(int from, int to) {
         }
     }
     int ret = d[to];
-    path->size = 0;
+    path.size = 0;
     for (int i = to; i != from; i = p[i]) {
-        path->nodes[path->size] = i;
-        path->size++;
+        //path->nodes[path->size] = (PathNode){.st = i, .s_cars = NULL, .reverse = false};
+        path.size++;
     }
-    path->nodes[path->size] = from;
-    path->size++;
-    APP_LOG(APP_LOG_LEVEL_INFO, "path size: %d", path->size);
+    path.size++;
+
+    path.nodes = malloc(sizeof(PathNode) * path.size);
+
+    path.size = 0;
+    for (int i = to; i != from; i = p[i]) {
+        path.nodes[path.size] = (PathNode){.st = i, .s_cars = NULL, .reverse = false};
+        path.size++;
+    }
+    path.nodes[path.size] = (PathNode){.st = from, .s_cars = NULL, .reverse = false};
+    path.size++;
+    bool remember_exits = true;
+    bool *s_cars = NULL;
+    for(int i = 0; i < path.size - 1; i++) {
+        if(remember_exits) {
+            s_cars = calloc(5, sizeof(bool));
+            for(int j = 0; j < stations[path.nodes[i].st].boardInfo.exitlen; j++) {
+                s_cars[stations[path.nodes[i].st].boardInfo.exit[j]] = true;
+            }
+            remember_exits = false;
+        }
+        if(stations[path.nodes[i].st].boardInfo.transfer != NULL) {
+            //APP_LOG(APP_LOG_LEVEL_INFO, "%s", stations[path.nodes[i].st].name);
+            if(i - 1 >= 0) {
+               for(int j = 0; j < stations[path.nodes[i].st].boardInfo.transferlen; j++) {
+                   if(path.nodes[i-1].st == stations[path.nodes[i].st].boardInfo.transfer[j].toStation) {
+                       if(i - 2 >= 0 && i + 1 < path.size) {
+                           if((path.nodes[i+1].st == stations[path.nodes[i].st].boardInfo.transfer[j].prevStation &&
+                                   path.nodes[i-2].st == stations[path.nodes[i].st].boardInfo.transfer[j].nextStation) ||
+                                   stations[path.nodes[i].st].boardInfo.transfer[j].nextStation == -1 ||
+                                   stations[path.nodes[i].st].boardInfo.transfer[j].prevStation == -1) {
+                               path.nodes[i-1].s_cars = s_cars;
+                               APP_LOG(APP_LOG_LEVEL_INFO, "%s: %d%d%d%d%d", stations[path.nodes[i-1].st].name,
+                               s_cars[0], s_cars[1], s_cars[2], s_cars[3], s_cars[4]);
+                               s_cars = calloc(5, sizeof(bool));
+                               for(int k = 0; k < stations[path.nodes[i].st].boardInfo.transfer[j].poslen; k++) {
+                                   s_cars[stations[path.nodes[i].st].boardInfo.transfer[j].pos[k]] = true;
+                               }
+                           }
+                       }
+                   }
+               }
+            }
+        }
+    }
+    path.nodes[path.size - 1].s_cars = s_cars;
+    APP_LOG(APP_LOG_LEVEL_INFO, "%s: %d%d%d%d%d", stations[path.nodes[path.size-1].st].name,
+            s_cars[0], s_cars[1], s_cars[2], s_cars[3], s_cars[4]);
+    APP_LOG(APP_LOG_LEVEL_INFO, "path size: %d", path.size);
     heap_destroy(q);
     free(d);
     free(p);

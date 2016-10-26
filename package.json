@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "author": "gaudima@gmail.com",
+  "private": true,
+  "dependencies": {},
+  "keywords": [
+    "pebble-app"
+  ],
+  "pebble": {
+    "sdkVersion": "3",
+    "resources": {
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "IMAGE_TRAIN_HEAD",
+          "file": "images/train_head.png",
+          "memoryFormat": "2BitPalette",
+          "spaceOptimization": "memory"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_TRAIN_CAR",
+          "file": "images/train_car.png",
+          "memoryFormat": "2BitPalette",
+          "spaceOptimization": "memory"
+        }
+      ]
+    },
+    "projectType": "native",
+    "uuid": "317aee3d-870d-4627-a361-116f9d3a037b",
+    "messageKeys": {},
+    "enableMultiJS": false,
+    "displayName": "\u041c\u0435\u0442\u0440\u043e \u0421\u041f\u0431",
+    "watchapp": {
+      "onlyShownOnCommunication": false,
+      "hiddenApp": false,
+      "watchface": false
+    },
+    "targetPlatforms": [
+      "basalt"
+    ],
+    "capabilities": [
+      ""
+    ]
+  },
+  "name": "\u041c\u0435\u0442\u0440\u043e \u0421\u041f\u0431"
+}

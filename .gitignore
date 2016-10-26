@@ -1,3 +1,5 @@
 build
 .lock-waf*
 .idea
+
+node_modules/

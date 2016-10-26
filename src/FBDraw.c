@@ -74,6 +74,23 @@ void draw_filled_rect_buffer(GBitmap *buffer, GRect rect, GColor color) {
     }
 }
 
+void draw_gbitmap_buffer_2bpp(GBitmap *buffer, GBitmap *bitmap, GPoint top_left, GColor *palette) {
+    uint8_t *data = gbitmap_get_data(bitmap);
+    GRect bounds = gbitmap_get_bounds(bitmap);
+    /*APP_LOG(APP_LOG_LEVEL_INFO, "bounds:\n x: %d\n w: %d\n y: %d\n h: %d", bounds.origin.x, bounds.size.w,
+            bounds.origin.y, bounds.size.h);*/
+    for(int i = bounds.origin.x; i < bounds.origin.x + bounds.size.w; i++) {
+       for(int j = bounds.origin.y; j < bounds.origin.y + bounds.size.h; j++) {
+           int idx = (i + j * bounds.size.w) * 2 / 8;
+           int shift = (i + j * bounds.size.w) * 2 % 8;
+           GColor color = palette[(data[idx] >> (8 - shift - 2)) & 0x03];
+           if(color.a != 0) {
+               draw_pixel(buffer, GPoint(top_left.x + i, top_left.y + j), color);
+           }
+       }
+    }
+}
+
 void draw_separator(GBitmap *buffer, uint8_t y, GColor color) {
     for(int x = 0; x < 144; x+=2) {
         draw_pixel(buffer, GPoint(x, y), color);
