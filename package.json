@@ -1,15 +1,48 @@
 {
-  "version": "1.0.0",
+  "name": "Metrock",
   "author": "gaudima@gmail.com",
+  "version": "1.0.0",
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "pebble-clay": "^1.0.4"
+  },
   "keywords": [
     "pebble-app"
   ],
   "pebble": {
+    "projectType": "native",
+    "uuid": "317aee3d-870d-4627-a361-116f9d3a037b",
     "sdkVersion": "3",
+    "enableMultiJS": true,
+    "displayName": "Metrock",
+
+    "watchapp": {
+      "onlyShownOnCommunication": false,
+      "hiddenApp": false,
+      "watchface": false
+    },
+
+    "targetPlatforms": [
+      "basalt"
+    ],
+
+    "messageKeys": [
+      "CITY_CHANGE",
+      "LOCALE_CHANGE"
+    ],
+
+    "capabilities": [
+      "configurable"
+    ],
+
     "resources": {
       "media": [
+        {
+          "menuIcon": true,
+          "type": "bitmap",
+          "name": "IMAGE_MENU_ICON",
+          "file": "images/icon.png"
+        },
         {
           "type": "bitmap",
           "name": "IMAGE_TRAIN_HEAD",
@@ -23,25 +56,120 @@
           "file": "images/train_car.png",
           "memoryFormat": "2BitPalette",
           "spaceOptimization": "memory"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_MSK",
+          "file": "schemes/moscow.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_SPB",
+          "file": "schemes/spb.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_KIEV",
+          "file": "schemes/kiev.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_KHARKIV",
+          "file": "schemes/kharkiv.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_MINSK",
+          "file": "schemes/minsk.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_MSK_EN",
+          "file": "schemes/locales/moscow_en.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_MSK_RU",
+          "file": "schemes/locales/moscow_ru.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_SPB_EN",
+          "file": "schemes/locales/spb_en.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_SPB_RU",
+          "file": "schemes/locales/spb_ru.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KIEV_EN",
+          "file": "schemes/locales/kiev_en.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KIEV_RU",
+          "file": "schemes/locales/kiev_ru.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KIEV_UKR",
+          "file": "schemes/locales/kiev_ukr.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KHARKIV_EN",
+          "file": "schemes/locales/kharkiv_en.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KHARKIV_RU",
+          "file": "schemes/locales/kharkiv_ru.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_KHARKIV_UKR",
+          "file": "schemes/locales/kharkiv_ukr.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_MINSK_EN",
+          "file": "schemes/locales/minsk_en.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_MINSK_RU",
+          "file": "schemes/locales/minsk_ru.bin"
+        },
+        {
+          "type": "raw",
+          "name": "SCHEME_LOCALE_MINSK_BEL",
+          "file": "schemes/locales/minsk_bel.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "LOCALE_EN",
+          "file": "locales/en_US.bin"
+        },
+        {
+          "type": "raw",
+          "name": "LOCALE_RU",
+          "file": "locales/ru_RU.bin"
+        },
+
+        {
+          "type": "raw",
+          "name": "DELTA_TEST",
+          "file": "schemes/delta_test.bin"
         }
       ]
-    },
-    "projectType": "native",
-    "uuid": "317aee3d-870d-4627-a361-116f9d3a037b",
-    "messageKeys": {},
-    "enableMultiJS": false,
-    "displayName": "\u041c\u0435\u0442\u0440\u043e \u0421\u041f\u0431",
-    "watchapp": {
-      "onlyShownOnCommunication": false,
-      "hiddenApp": false,
-      "watchface": false
-    },
-    "targetPlatforms": [
-      "basalt"
-    ],
-    "capabilities": [
-      ""
-    ]
-  },
-  "name": "\u041c\u0435\u0442\u0440\u043e \u0421\u041f\u0431"
+    }
+  }
 }

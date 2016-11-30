@@ -1,17 +1,50 @@
-# metro-spb
-## Description
-App that will help you to travel in Saint-Petersburg metro by finding fastest route.
+# Metrock
+## Engilish
 
-## Screenshots
-<p align="center">
-<img src="https://cloud.githubusercontent.com/assets/958656/10863570/8e5d232a-7fe2-11e5-8572-d7f969cdf203.jpg" />
+### Description
+App for Pebble Time that will help you to find fastest route in Russian/Ukrainian/Belorussian metro.
 
-<img src="https://cloud.githubusercontent.com/assets/958656/10863572/9053ddfe-7fe2-11e5-8ee9-979146fb7d67.jpg" />
+### Screenshots
+:---:|:---:|:---:|:---:
+![main_en](https://cloud.githubusercontent.com/assets/958656/20752926/eb707e3a-b714-11e6-9195-251230a035a7.png) | ![select_1_en](https://cloud.githubusercontent.com/assets/958656/20752939/f81f264a-b714-11e6-8b76-05611b672b02.png) |![select_2_en](https://cloud.githubusercontent.com/assets/958656/20752945/fce4d3e6-b714-11e6-8cbc-a3392078f2cc.png) | ![path_en](https://cloud.githubusercontent.com/assets/958656/20752951/008e0f76-b715-11e6-9c07-5a334e55417c.png)
 
-<img src="https://cloud.githubusercontent.com/assets/958656/10863573/92110450-7fe2-11e5-97aa-d1f74b20e643.jpg" />
-</p>
+### Features
+* Supported cities
+    * Moscow
+    * Saint-Petersburg
+    * Kiev
+    * Kharkiv
+    * Misnk
+* Supported locales
+    * English
+    * Russian
 
-## Plans
-* Adding support for platforms other than Basalt.
-* Adding support all cities supported by Yandex.Metro not only Saint-Petersburg.
-* Add info about traincarts where to sit
+### Plans
+* Support for platforms other than Basalt.
+* Support more locales.
+* Add board information.
+
+## Русский
+
+### Описание
+Приложение для Pebble Time, которое поможет найти быстрейший маршрут в Русском/Украинском/Белорусском метро.
+
+### Скриншоты
+:---:|:---:|:---:|:---:
+![main_ru](https://cloud.githubusercontent.com/assets/958656/20752954/05911af4-b715-11e6-930c-67567f4c01f2.png) | ![select_1_ru](https://cloud.githubusercontent.com/assets/958656/20753008/4c2dc962-b715-11e6-9760-535baf28fa86.png) | ![select_2_ru](https://cloud.githubusercontent.com/assets/958656/20753012/50373994-b715-11e6-8ad6-0f6f8e2ac495.png) | ![path_ru](https://cloud.githubusercontent.com/assets/958656/20753014/538ecf8a-b715-11e6-9e9e-228e11849926.png)
+
+### Возможности
+* Поддерживаемые города
+    * Москва
+    * Санкт-Петербург
+    * Киев
+    * Харьков
+    * Минск
+* Поддерживаемые языки
+    * Английский
+    * Русский
+    
+### Планы
+* Поддержка платформ отличных от Basalt.
+* Поддержка других языков.
+* Добавить информацию о том, в какой вагон сесть.
